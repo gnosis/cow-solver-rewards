@@ -1,6 +1,6 @@
-# Code mostly copied from: https://github.com/itzmestar/duneanalytics
-
-"""This provides the DuneAnalytics class implementation"""
+"""
+A simple framework for interacting with not officially supported DuneAnalytics API
+"""
 from __future__ import annotations
 
 import os
