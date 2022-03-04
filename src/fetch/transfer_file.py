@@ -1,10 +1,9 @@
 import argparse
 from dataclasses import dataclass
 from datetime import datetime
-from pprint import pprint
 from typing import Optional
 
-from src.dune_analytics import DuneAnalytics
+from src.dune_analytics import DuneAnalytics, QueryParameter
 from src.models import Network
 from src.read_write import File, write_to_csv
 
@@ -32,16 +31,8 @@ def get_transfers(
         network=Network.MAINNET,
         name="Period Transfers",
         parameters=[
-            {
-                "key": "StartTime",
-                "type": "datetime",
-                "value": period_start.strftime("%Y-%m-%d %H:%M:%S"),
-            },
-            {
-                "key": "EndTime",
-                "type": "datetime",
-                "value": period_end.strftime("%Y-%m-%d %H:%M:%S"),
-            },
+            QueryParameter.date_type("StartTime", period_start),
+            QueryParameter.date_type("EndTime", period_end),
         ])
     return [
         Transfer(
