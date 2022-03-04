@@ -17,7 +17,7 @@ BASE_URL = "https://dune.xyz"
 GRAPH_URL = 'https://core-hsr.duneanalytics.com/v1/graphql'
 
 
-class DuneParameterType(Enum):
+class ParameterType(Enum):
     """
     Enum of the 4 distinct dune parameter types
     """
@@ -30,70 +30,53 @@ class DuneParameterType(Enum):
 class QueryParameter:
     """Class whose instances are Dune Compatible Query Parameters"""
 
-    def __init__(
-            self,
-            name: str,
-            parameter_type: DuneParameterType,
-            raw_value: Any,
-            value_str: str
-    ):
+    def __init__(self, name: str, parameter_type: ParameterType, value: Any):
         self.key: str = name
-        self.type: DuneParameterType = parameter_type
-        self.value_str = value_str
-        self.original_value = raw_value
+        self.type: ParameterType = parameter_type
+        self.value = value
 
     @classmethod
     def text_type(cls, name: str, value: str):
         """Constructs a Query parameter of type text"""
-        return cls(
-            name,
-            DuneParameterType.TEXT,
-            raw_value=value,
-            value_str=value,
-        )
+        return cls(name, ParameterType.TEXT, value)
 
     @classmethod
     def number_type(cls, name: str, value: int | float):
         """Constructs a Query parameter of type number"""
-        return cls(
-            name,
-            DuneParameterType.NUMBER,
-            raw_value=value,
-            value_str=str(value),
-        )
+        return cls(name, ParameterType.NUMBER, value)
 
     @classmethod
     def date_type(cls, name: str, value: datetime):
         """Constructs a Query parameter of type date"""
-        return cls(
-            name,
-            DuneParameterType.DATE,
-            raw_value=value,
-            # This is the postgres string format of timestamptz
-            value_str=value.strftime("%Y-%m-%d %H:%M:%S"),
-        )
+        return cls(name, ParameterType.DATE, value)
 
     @classmethod
     def list_type(cls, name: str, value: list[str]):
         """Constructs a Query parameter of type list"""
-        return cls(
-            name,
-            DuneParameterType.LIST,
-            raw_value=value,
-            value_str="\n".join(value),
-        )
+        return cls(name, ParameterType.LIST, value)
+
+    def _value_str(self) -> str:
+        match self.type:
+            case (ParameterType.TEXT):
+                return self.value
+            case (ParameterType.NUMBER):
+                return str(self.value)
+            case (ParameterType.LIST):
+                # List items separated by new line as (specified by Dune)
+                return "\n".join(self.value)
+            case (ParameterType.DATE):
+                # This is the postgres string format of timestamptz
+                return self.value.strftime("%Y-%m-%d %H:%M:%S")
+
+        raise TypeError(f"Type {self.type} not recognized!")
 
     def to_dict(self) -> dict[str, str]:
         """Converts QueryParameter into string json format accepted by Dune API"""
         return {
             "key": self.key,
             "type": self.type.value,
-            "value": self.value_str,
+            "value": self._value_str(),
         }
-
-    def value(self) -> Any:
-        """Returns the parameter value in the original type provided"""
-        return self.original_value
 
 
 class DuneAnalytics:
