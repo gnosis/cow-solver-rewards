@@ -105,12 +105,7 @@ class DuneAnalytics:
     All requests to be made through this class.
     """
 
-    def __init__(
-            self,
-            username: str,
-            password: str,
-            query_id: int
-    ):
+    def __init__(self, username: str, password: str, query_id: int):
         """
         Initialize the object
         :param username: username for duneanalytics.com
