@@ -105,7 +105,13 @@ class DuneAnalytics:
     All requests to be made through this class.
     """
 
-    def __init__(self, username: str, password: str, query_id: int):
+    def __init__(
+            self,
+            username: str,
+            password: str,
+            query_id: int,
+            ping_frequency: int = 5
+    ):
         """
         Initialize the object
         :param username: username for duneanalytics.com
@@ -119,6 +125,7 @@ class DuneAnalytics:
         self.password = password
         self.query_id = int(query_id)
         self.session = Session()
+        self.ping_frequency = ping_frequency
         headers = {
             'origin': BASE_URL,
             'sec-ch-ua-mobile': '?0',
@@ -130,7 +137,10 @@ class DuneAnalytics:
         self.session.headers.update(headers)
 
     @staticmethod
-    def new_from_environment():
+    def new_from_environment(
+            ping_frequency: int = 5,
+            max_retries: int = 2,
+    ):
         """
         Initialize and authenticate a Dune client from the current environment.
         """
@@ -312,8 +322,7 @@ class DuneAnalytics:
             self,
             query_filepath: str,
             network: Network,
-            parameters: Optional[list[QueryParameter]],
-            ping_frequency: int = 5,
+            parameters: Optional[list[QueryParameter]] = None,
             max_retries: int = 2,
     ) -> list[dict]:
         """
@@ -327,7 +336,7 @@ class DuneAnalytics:
         )
         for _ in range(0, max_retries):
             try:
-                return self.execute_and_await_results(ping_frequency)
+                return self.execute_and_await_results(self.ping_frequency)
             except RuntimeError as err:
                 print(
                     f"execution fetching failed with {err}.\n"
