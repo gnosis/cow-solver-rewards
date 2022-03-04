@@ -13,12 +13,9 @@ from requests import Session
 
 from src.models import Network
 
-# --------- Constants --------- #
 BASE_URL = "https://dune.xyz"
 GRAPH_URL = 'https://core-hsr.duneanalytics.com/v1/graphql'
 
-
-# --------- Constants --------- #
 
 class DuneParameterType(Enum):
     """
