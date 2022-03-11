@@ -348,7 +348,7 @@ class DuneAnalytics:
             parameters: Optional[list[QueryParameter]],
     ) -> list[dict]:
         """
-        :param query_str: path to sql file to execute
+        :param query_str: query string conforming to postgres syntax
         :param network: 'mainnet' or 'gchain'
         :param name: optional name of what is being fetched (for logging)
         :param parameters: optional parameters to be included in query
