@@ -17,19 +17,26 @@ def generate_sql_query_for_allowed_token_list(token_list) -> str:
     return query
 
 
+def adds_table_after_with_statement(query, table_to_add):
+    if query[0:4].lower() != "with":
+        raise ValueError(f"Type {query} does not start with 'with'!")
+    return "\n".join(
+        [
+            query[0:4],
+            table_to_add,
+            query[5:],
+        ]
+    )
+
+
 def add_token_list_table_to_query(original_sub_query: str) -> str:
     '''Inserts a the token_list table right after the WITH statement into the sql query'''
     token_list = get_trusted_tokens_from_url(
         ALLOWED_TOKEN_LIST_URL)
     sql_query_for_allowed_token_list = generate_sql_query_for_allowed_token_list(
         token_list)
-    return "\n".join(
-        [
-            original_sub_query[0:5],
-            sql_query_for_allowed_token_list,
-            original_sub_query[5:],
-        ]
-    )
+    return adds_table_after_with_statement(original_sub_query,
+                                           sql_query_for_allowed_token_list)
 
 
 def slippage_query(dune: DuneAnalytics) -> str:
