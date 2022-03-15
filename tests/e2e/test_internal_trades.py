@@ -114,8 +114,8 @@ class TestDuneAnalytics(unittest.TestCase):
     def test_does_recognize_slippage_due_to_buffer_token_list(self):
         """
         tx: 0x0bd527494e8efbf4c3013d1e355976ed90fa4e3b79d1f2c2a2690b02baae4abe
-        This tx scores a deficit in eth and a surplus in pickle. As pickle is not in the allow-list
-        it is recognized as slippage.
+        This tx has a internal trade between pickle and eth. As pickle is not in the allow-list, hence 
+        the internal trade was not allowed, our queries should recognized it as slippage as not as a internal trade. 
         """
         internal_transfers = get_internal_transfers(
             dune=self.dune_connection,
