@@ -31,6 +31,9 @@ class TokenType(Enum):
         except KeyError as err:
             raise ValueError(f"No TransferType {type_str}!") from err
 
+    def __str__(self):
+        return self.value
+
 
 @dataclass
 class Transfer:
@@ -54,7 +57,8 @@ class Transfer:
 
         return cls(
             token_type=token_type,
-            token_address=Address(token_address) if token_type != TokenType.NATIVE else None,
+            token_address=Address(
+                token_address) if token_type != TokenType.NATIVE else None,
             receiver=Address(obj['receiver']),
             amount=float(obj['amount'])
         )
@@ -96,8 +100,8 @@ def get_transfers(
             transfer.add_slippage(indexed_slippage.get(transfer.receiver))
             if transfer.amount <= 0:
                 print(
-                    f"Slippage adjustment resulted in negative reimbursement!"
-                    f"Excluding eth transfer for solver {transfer.receiver}"
+                    f"Slippage adjustment resulted in negative reimbursement! \n"
+                    f"Excluding eth reimbursement for solver {transfer.receiver}"
                 )
                 continue
         results.append(transfer)
