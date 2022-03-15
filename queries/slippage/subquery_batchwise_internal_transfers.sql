@@ -184,6 +184,7 @@ buffer_trades as (
                              on a.tx_hash = b.tx_hash
     where (
             case 
+                -- in order to classify as buffer trade, the postive surplus must be in an allow_listed token
                 when (a.amount > 0 and b.amount < 0 and a.token in (Select * from allow_listed_tokens)) 
                     or (b.amount > 0 and a.amount < 0 and b.token in (Select * from allow_listed_tokens))
                 then
