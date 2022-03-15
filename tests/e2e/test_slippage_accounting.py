@@ -14,14 +14,14 @@ class TestDuneAnalytics(unittest.TestCase):
         there should be manual investigations
         """
         dune = DuneAnalytics.new_from_environment()
-        slippage_accounting = get_period_slippage(
+        solver_slippages = get_period_slippage(
             dune=dune,
             period_start=datetime.strptime('2022-03-01', "%Y-%m-%d"),
             period_end=datetime.strptime('2022-03-02', "%Y-%m-%d"),
         )
-        assert (len(slippage_accounting) > 0)
-        for obj in slippage_accounting:
-            assert (abs(obj['eth_slippage_wei']) < 2 * 10 ** 18)
+        assert (len(solver_slippages) > 0)
+        for slippage in solver_slippages:
+            assert (abs(slippage.amount_wei) < 2 * 10 ** 18)
 
 
 if __name__ == '__main__':
