@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime
 
 from src.dune_analytics import DuneAnalytics, QueryParameter
+from src.fetch.period_slippage import build_subquery
 from src.file_io import File
 from src.models import Address, InternalTokenTransfer, Network
 
@@ -23,11 +24,10 @@ def get_internal_transfers(
         period_end: datetime
 ) -> list[InternalTokenTransfer]:
     path = "./queries/slippage"
-    slippage_subquery = File("subquery_batchwise_internal_transfers.sql", path)
     select_transfers_file = File("select_in_out_with_buffers.sql", path)
     query = "\n".join(
         [
-            dune.open_query(slippage_subquery.filename()),
+            build_subquery(dune),
             dune.open_query(select_transfers_file.filename())
         ]
     )
@@ -99,7 +99,7 @@ class TestDuneAnalytics(unittest.TestCase):
         These trades could be seen as buffer trades, but they should not:
         These kind of trades can drain the buffers over time, as the prices of trading
         includes the AMM fees and hence are unfavourable for the buffers. Also, they are avoidable
-        by using buyOrder on the AMMs. 
+        by using buyOrder on the AMMs.
         """
         internal_transfers = get_internal_transfers(
             dune=self.dune_connection,
@@ -110,6 +110,27 @@ class TestDuneAnalytics(unittest.TestCase):
         internal_trades = InternalTokenTransfer.internal_trades(
             internal_transfers)
         self.assertEqual(len(internal_trades), 0 * 2)
+
+    def test_does_recognize_slippage_due_to_buffer_token_list(self):
+        """
+        tx: 0x0bd527494e8efbf4c3013d1e355976ed90fa4e3b79d1f2c2a2690b02baae4abe
+        This tx scores a deficit in eth and a surplus in pickle. As pickle is not in the allow-list
+        it is recognized as slippage.
+        """
+        internal_transfers = get_internal_transfers(
+            dune=self.dune_connection,
+            tx_hash='0x0bd527494e8efbf4c3013d1e355976ed90fa4e3b79d1f2c2a2690b02baae4abe',
+            period_start=self.period_start,
+            period_end=self.period_end,
+        )
+        internal_trades = InternalTokenTransfer.internal_trades(
+            internal_transfers)
+        self.assertEqual(len(internal_trades), 0 * 2)
+        self.assertEqual(
+            token_slippage(
+                '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+                internal_transfers
+            ), -678305196269132000)
 
     def test_zero_buffer_trade(self):
         """
