@@ -5,22 +5,22 @@ from pprint import pprint
 from src.dune_analytics import DuneAnalytics, QueryParameter
 from src.file_io import File
 from src.models import Network
-from src.token_list import HOSTED_ALLOWED_BUFFER_TRADING_TOKEN_LIST_URL, get_trusted_tokens_from_url
+from src.token_list import ALLOWED_TOKEN_LIST_URL, get_trusted_tokens_from_url
 
 
 def generate_sql_query_for_allowed_token_list(token_list) -> str:
     query = "allow_listed_tokens as ( Select * from (VALUES"
     for address in token_list:
-        query = "".join([query, f"('\\{address[1:]}' :: bytea),"])
+        query += f"('\\{address[1:]}' :: bytea),"
     query = query[:-1]
-    query = "".join([query, ") AS t (token)),"])
+    query += ") AS t (token)),"
     return query
 
 
 def add_token_list_table_to_query(original_sub_query: str) -> str:
     '''Inserts a the token_list table right after the WITH statement into the sql query'''
     token_list = get_trusted_tokens_from_url(
-        HOSTED_ALLOWED_BUFFER_TRADING_TOKEN_LIST_URL)
+        ALLOWED_TOKEN_LIST_URL)
     sql_query_for_allowed_token_list = generate_sql_query_for_allowed_token_list(
         token_list)
     return "\n".join(

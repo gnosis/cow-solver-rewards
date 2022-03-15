@@ -3,7 +3,7 @@ import json
 import requests
 
 #pylint: disable=line-too-long
-HOSTED_ALLOWED_BUFFER_TRADING_TOKEN_LIST_URL = 'https://raw.githubusercontent.com/gnosis/cow-dex-solver/main/data/token_list_for_buffer_trading.json'
+ALLOWED_TOKEN_LIST_URL = 'https://raw.githubusercontent.com/gnosis/cow-dex-solver/main/data/token_list_for_buffer_trading.json'
 
 
 def get_trusted_tokens(token_list_json: str) -> list[str]:
