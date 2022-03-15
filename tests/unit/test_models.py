@@ -1,5 +1,7 @@
 import unittest
 
+from src.fetch.period_slippage import SolverSlippage
+from src.fetch.transfer_file import Transfer, TokenType
 from src.models import Address, TransferType
 
 
@@ -48,6 +50,79 @@ class TestTransferType(unittest.TestCase):
     def test_invalid(self):
         with self.assertRaises(ValueError):
             TransferType.from_str(self.invalid_type)
+
+
+class TestTransfer(unittest.TestCase):
+
+    def test_add_slippage(self):
+        solver = Address.zero()
+        transfer = Transfer(
+            token_type=TokenType.NATIVE,
+            token_address=None,
+            receiver=solver,
+            amount=1.0
+        )
+        positive_slippage = SolverSlippage(
+            solver_name="Test Solver",
+            solver_address=solver,
+            amount_wei=10 ** 18 // 2
+        )
+        negative_slippage = SolverSlippage(
+            solver_name="Test Solver",
+            solver_address=solver,
+            amount_wei=-10 ** 18 // 2
+        )
+        transfer.add_slippage(positive_slippage)
+        self.assertAlmostEqual(transfer.amount, 1.5, delta=0.0000000001)
+        transfer.add_slippage(negative_slippage)
+        self.assertAlmostEqual(transfer.amount, 1.0, delta=0.0000000001)
+
+    def test_errors(self):
+        transfer = Transfer(
+            token_type=TokenType.NATIVE,
+            token_address=None,
+            receiver=Address("0x1111111111111111111111111111111111111111"),
+            amount=1.0
+        )
+        slippage = SolverSlippage(
+            solver_name="Test Solver",
+            solver_address=Address("0x2222222222222222222222222222222222222222"),
+            amount_wei=0
+        )
+        with self.assertRaises(AssertionError):
+            transfer.add_slippage(slippage)
+
+    def test_from_dict(self):
+        self.assertEqual(
+            Transfer.from_dict({
+                "token_type": 'native',
+                "token_address": None,
+                "receiver": "0x1111111111111111111111111111111111111111",
+                "amount": "1.234"
+            }),
+            Transfer(
+                token_type=TokenType.NATIVE,
+                token_address=None,
+                receiver=Address("0x1111111111111111111111111111111111111111"),
+                amount=1.234
+            )
+        )
+
+        with self.assertRaises(ValueError):
+            Transfer.from_dict({
+                "token_type": 'erc20',
+                "token_address": None,
+                "receiver": "0x1111111111111111111111111111111111111111",
+                "amount": "1.234"
+            })
+
+        with self.assertRaises(ValueError):
+            Transfer.from_dict({
+                "token_type": 'native',
+                "token_address": "0x1111111111111111111111111111111111111111",
+                "receiver": "0x1111111111111111111111111111111111111111",
+                "amount": "1.234"
+            })
 
 
 if __name__ == '__main__':

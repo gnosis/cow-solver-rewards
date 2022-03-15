@@ -7,9 +7,9 @@ from enum import Enum
 from typing import Optional
 
 from src.dune_analytics import DuneAnalytics, QueryParameter
-from src.fetch.period_slippage import get_period_slippage
+from src.fetch.period_slippage import get_period_slippage, SolverSlippage
 from src.file_io import File, write_to_csv
-from src.models import Network, Address, SolverSlippage
+from src.models import Network, Address
 from src.utils.dataset import index_by
 
 
@@ -27,7 +27,7 @@ class TokenType(Enum):
     def from_str(cls, type_str: str) -> TokenType:
         """Constructs Enum variant from string (case-insensitive)"""
         try:
-            return cls[type_str.lower()]
+            return cls[type_str.upper()]
         except KeyError as err:
             raise ValueError(f"No TransferType {type_str}!") from err
 
@@ -46,11 +46,15 @@ class Transfer:
     def from_dict(cls, obj: dict) -> Transfer:
         """Converts Dune data dict to object with types"""
         token_type = TokenType.from_str(obj['token_type'])
-        token = Address(
-            obj['token_address']) if token_type != TokenType.NATIVE else None
+        token_address = obj['token_address']
+        if token_type == TokenType.NATIVE and token_address is not None:
+            raise ValueError("Native transfers must have null token_address")
+        if token_type == TokenType.ERC20 and token_address is None:
+            raise ValueError("ERC20 transfers must have valid token_address")
+
         return cls(
             token_type=token_type,
-            token_address=token,
+            token_address=Address(token_address) if token_type != TokenType.NATIVE else None,
             receiver=Address(obj['receiver']),
             amount=float(obj['amount'])
         )
@@ -58,8 +62,8 @@ class Transfer:
     def add_slippage(self, slippage: Optional[SolverSlippage]):
         if slippage is None:
             return
-        assert self.receiver == slippage.solver
-        adjustment = slippage.eth_amount_wei / 10 ** 18
+        assert self.receiver == slippage.solver_address
+        adjustment = slippage.amount_wei / 10 ** 18
         print(
             f"Adjusting {self.receiver} transfer by {adjustment:.5f} (slippage)"
         )
@@ -74,7 +78,7 @@ def get_transfers(
     reimbursements_and_rewards = dune.fetch(
         query_str=dune.open_query("./queries/period_transfers.sql"),
         network=Network.MAINNET,
-        name="Period Transfers",
+        name="ETH Reimbursement & COW Rewards",
         parameters=[
             QueryParameter.date_type("StartTime", period_start),
             QueryParameter.date_type("EndTime", period_end),
@@ -97,6 +101,8 @@ def get_transfers(
                 )
                 continue
         results.append(transfer)
+
+    return results
 
 
 if __name__ == "__main__":
