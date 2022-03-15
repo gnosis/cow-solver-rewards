@@ -4,6 +4,9 @@ from src.fetch.period_slippage import SolverSlippage
 from src.fetch.transfer_file import Transfer, TokenType
 from src.models import Address, TransferType
 
+ONE_ADDRESS = Address("0x1111111111111111111111111111111111111111")
+TWO_ADDRESS = Address("0x2222222222222222222222222222222222222222")
+
 
 class TestAddress(unittest.TestCase):
     def setUp(self) -> None:
@@ -81,12 +84,12 @@ class TestTransfer(unittest.TestCase):
         transfer = Transfer(
             token_type=TokenType.NATIVE,
             token_address=None,
-            receiver=Address("0x1111111111111111111111111111111111111111"),
+            receiver=ONE_ADDRESS,
             amount=1.0
         )
         slippage = SolverSlippage(
             solver_name="Test Solver",
-            solver_address=Address("0x2222222222222222222222222222222222222222"),
+            solver_address=TWO_ADDRESS,
             amount_wei=0
         )
         with self.assertRaises(AssertionError):
@@ -97,13 +100,13 @@ class TestTransfer(unittest.TestCase):
             Transfer.from_dict({
                 "token_type": 'native',
                 "token_address": None,
-                "receiver": "0x1111111111111111111111111111111111111111",
+                "receiver": ONE_ADDRESS.address,
                 "amount": "1.234"
             }),
             Transfer(
                 token_type=TokenType.NATIVE,
                 token_address=None,
-                receiver=Address("0x1111111111111111111111111111111111111111"),
+                receiver=ONE_ADDRESS,
                 amount=1.234
             )
         )
@@ -112,15 +115,15 @@ class TestTransfer(unittest.TestCase):
             Transfer.from_dict({
                 "token_type": 'erc20',
                 "token_address": None,
-                "receiver": "0x1111111111111111111111111111111111111111",
+                "receiver": ONE_ADDRESS.address,
                 "amount": "1.234"
             })
 
         with self.assertRaises(ValueError):
             Transfer.from_dict({
                 "token_type": 'native',
-                "token_address": "0x1111111111111111111111111111111111111111",
-                "receiver": "0x1111111111111111111111111111111111111111",
+                "token_address": ONE_ADDRESS.address,
+                "receiver": ONE_ADDRESS.address,
                 "amount": "1.234"
             })
 
