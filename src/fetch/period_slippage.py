@@ -11,9 +11,9 @@ from src.token_list import HOSTED_ALLOWED_BUFFER_TRADING_TOKEN_LIST_URL, get_tru
 def generate_sql_query_for_allowed_token_list(token_list) -> str:
     query = "allow_listed_tokens as ( Select * from (VALUES"
     for address in token_list:
-        query += f"('\{address[1:]}' :: bytea),"
+        query = "".join([query, f"('\\{address[1:]}' :: bytea),"])
     query = query[:-1]
-    query += ") AS t (token)),"
+    query = "".join([query, ") AS t (token)),"])
     return query
 
 
@@ -34,12 +34,14 @@ def add_token_list_table_to_query(original_sub_query: str) -> str:
 
 def slippage_query(dune: DuneAnalytics) -> str:
     path = "./queries/slippage"
-    slippage_subquery = File("subquery_batchwise_internal_transfers.sql", path)
-    select_slippage = File("select_slippage_results.sql", path)
+    slippage_sub_query = dune.open_query(
+        File("subquery_batchwise_internal_transfers.sql", path).filename())
+    select_slippage_query = dune.open_query(
+        File("select_slippage_results.sql", path).filename())
     return "\n".join(
         [
-            add_token_list_table_to_query(slippage_subquery),
-            dune.open_query(select_slippage.filename())
+            add_token_list_table_to_query(slippage_sub_query),
+            select_slippage_query
         ]
     )
 
