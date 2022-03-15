@@ -71,7 +71,10 @@ class Transfer:
         print(
             f"Adjusting {self.receiver} transfer by {adjustment:.5f} (slippage)"
         )
-        self.amount += adjustment
+        new_amount = self.amount + adjustment
+        if new_amount <= 0:
+            raise ValueError(f"Invalid adjustment {self} by {adjustment}")
+        self.amount = new_amount
 
 
 def get_transfers(
@@ -97,13 +100,17 @@ def get_transfers(
     for row in reimbursements_and_rewards:
         transfer = Transfer.from_dict(row)
         if transfer.token_type == TokenType.NATIVE:
-            transfer.add_slippage(indexed_slippage.get(transfer.receiver))
-            if transfer.amount <= 0:
+            slippage: SolverSlippage = indexed_slippage.get(transfer.receiver)
+            try:
+                transfer.add_slippage(slippage)
+            except ValueError as err:
                 print(
-                    f"Slippage adjustment resulted in negative reimbursement! \n"
-                    f"Excluding eth reimbursement for solver {transfer.receiver}"
+                    f"Failed to add slippage: {err} \n"
+                    f"   Excluding eth reimbursement for solver "
+                    f"{slippage.solver_address}({slippage.solver_name})"
                 )
                 continue
+
         results.append(transfer)
 
     return results
