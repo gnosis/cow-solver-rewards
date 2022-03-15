@@ -90,6 +90,12 @@ def get_transfers(
         transfer = Transfer.from_dict(row)
         if transfer.token_type == TokenType.NATIVE:
             transfer.add_slippage(indexed_slippage.get(transfer.receiver))
+            if transfer.amount <= 0:
+                print(
+                    f"Slippage adjustment resulted in negative reimbursement!"
+                    f"Excluding eth transfer for solver {transfer.receiver}"
+                )
+                continue
         results.append(transfer)
 
 
