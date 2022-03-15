@@ -6,7 +6,7 @@ HOSTED_ALLOWED_BUFFER_TRADING_TOKEN_LIST_URL = 'https://raw.githubusercontent.co
 
 
 def get_trusted_tokens(token_list_json: str) -> list[str]:
-    """Get list of trusted token IDs from JSON file.
+    """Get list of trusted token IDs from JSON-str.
     """
     try:
         token_list = json.loads(token_list_json)

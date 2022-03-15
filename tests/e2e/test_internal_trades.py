@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 
 from src.dune_analytics import DuneAnalytics, QueryParameter
-from src.fetch.period_slippage import build_subquery
+from src.fetch.period_slippage import add_token_list_table_to_query
 from src.file_io import File
 from src.models import Address, InternalTokenTransfer, Network
 
@@ -25,9 +25,10 @@ def get_internal_transfers(
 ) -> list[InternalTokenTransfer]:
     path = "./queries/slippage"
     select_transfers_file = File("select_in_out_with_buffers.sql", path)
+    slippage_subquery = File("subquery_batchwise_internal_transfers.sql", path)
     query = "\n".join(
         [
-            build_subquery(dune),
+            add_token_list_table_to_query(slippage_subquery),
             dune.open_query(select_transfers_file.filename())
         ]
     )

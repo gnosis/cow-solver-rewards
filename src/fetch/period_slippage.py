@@ -17,28 +17,28 @@ def generate_sql_query_for_allowed_token_list(token_list) -> str:
     return query
 
 
-def build_subquery(dune: DuneAnalytics) -> str:
-    slippage_subquery = File("subquery_batchwise_internal_transfers.sql", path)
+def add_token_list_table_to_query(original_sub_query: str) -> str:
+    '''Inserts a the token_list table right after the WITH statement into the sql query'''
     token_list = get_trusted_tokens_from_url(
         HOSTED_ALLOWED_BUFFER_TRADING_TOKEN_LIST_URL)
     sql_query_for_allowed_token_list = generate_sql_query_for_allowed_token_list(
         token_list)
-    slippage_query = dune.open_query(slippage_subquery.filename())
     return "\n".join(
         [
-            slippage_query[0:5],
+            original_sub_query[0:5],
             sql_query_for_allowed_token_list,
-            slippage_query[5:],
+            original_sub_query[5:],
         ]
     )
 
 
 def slippage_query(dune: DuneAnalytics) -> str:
     path = "./queries/slippage"
+    slippage_subquery = File("subquery_batchwise_internal_transfers.sql", path)
     select_slippage = File("select_slippage_results.sql", path)
     return "\n".join(
         [
-            build_subquery(dune),
+            add_token_list_table_to_query(slippage_subquery),
             dune.open_query(select_slippage.filename())
         ]
     )
