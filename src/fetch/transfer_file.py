@@ -142,13 +142,9 @@ if __name__ == "__main__":
         data_list=transfers,
         outfile=File(name=f"transfers-{args.start}-to-{args.end}.csv"),
     )
-    print(
-        f"Total ETH Funds needed: {sum(transfer.amount for transfer in transfers if transfer.token_type == TokenType.NATIVE)}"
-    )
-    print(
-        f"Total COW Funds needed: {sum(transfer.amount for transfer in transfers if transfer.token_type == TokenType.ERC20)}"
-    )
-    print(
-        f"For solver payouts, copy paste the content of the newly created CSV into the multi-send safe app at:"
-    )
+    eth_total = sum(t.amount for t in transfers if t.token_type == TokenType.NATIVE)
+    print(f"Total ETH Funds needed: {eth_total}")
+    cow_total = sum(t.amount for t in transfers if t.token_type == TokenType.ERC20)
+    print(f"Total COW Funds needed: {cow_total}")
+    print(f"For solver payouts, paste the transfer file CSV Airdrop at:")
     print(f"{safe_url()}")
