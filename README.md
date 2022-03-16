@@ -1,5 +1,6 @@
-# CoW Protocol: Solver Reimbursement & Rewards Distributor
 
+# CoW Protocol: Solver Reimbursement & Rewards Distributor
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ## Installation & Usage
 
 ```shell
