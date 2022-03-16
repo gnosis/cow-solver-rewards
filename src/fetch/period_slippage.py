@@ -66,17 +66,33 @@ class SolverSlippage:
         return cls(
             solver_address=Address(obj['solver_address']),
             solver_name=obj['solver_name'],
-            # TODO - Reverse the signature of the value
             amount_wei=int(obj['eth_slippage_wei'])
         )
+
+
+@dataclass
+class SplitSlippages:
+    """Basic class to store the output of slippage fetching"""
+    negative: list[SolverSlippage]
+    positive: list[SolverSlippage]
+
+    def __init__(self):
+        self.negative = []
+        self.positive = []
+
+    def append(self, slippage: SolverSlippage):
+        """Appends the Slippage to the appropriate half based on signature of amount"""
+        if slippage.amount_wei < 0:
+            self.negative.append(slippage)
+        else:
+            self.positive.append(slippage)
 
 
 def get_period_slippage(
         dune: DuneAnalytics,
         period_start: datetime,
-        period_end: datetime,
-        allow_positive: bool = True
-) -> list[SolverSlippage]:
+        period_end: datetime
+) -> SplitSlippages:
     data_set = dune.fetch(
         query_str=slippage_query(dune),
         network=Network.MAINNET,
@@ -88,11 +104,9 @@ def get_period_slippage(
             QueryParameter.text_type("ResultTable", "results")
         ]
     )
-    results = []
+    results = SplitSlippages()
     for row in data_set:
-        slippage = SolverSlippage.from_dict(row)
-        if slippage.amount_wei < 0 or allow_positive is True:
-            results.append(slippage)
+        results.append(slippage=SolverSlippage.from_dict(row))
 
     return results
 

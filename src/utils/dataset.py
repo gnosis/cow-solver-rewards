@@ -10,10 +10,9 @@ def index_by(data_list: list[dataclass], field_str: str) -> dict[Any, dataclass]
     """
     if len(data_list) == 0:
         return {}
-
-    field_names = {field.name for field in fields(data_list[0])}
-    assert field_str in field_names, \
-        f"index field {field_str} does not exist on {type(data_list[0])}"
+    sample = data_list[0]
+    field_names = {field.name for field in fields(sample)}
+    assert field_str in field_names, f"{type(sample)} has no field \"{field_str}\""
 
     results = {}
     for entry in data_list:
@@ -21,5 +20,6 @@ def index_by(data_list: list[dataclass], field_str: str) -> dict[Any, dataclass]
         if index_key not in results:
             results[index_key] = entry
         else:
-            raise IndexError(f"Attempting to index by non-unique entry \"{entry}\"")
+            raise IndexError(
+                f"Attempting to index by non-unique index key \"{index_key}\"")
     return results

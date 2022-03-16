@@ -66,7 +66,7 @@ class Transfer:
     def add_slippage(self, slippage: Optional[SolverSlippage]):
         if slippage is None:
             return
-        assert self.receiver == slippage.solver_address
+        assert self.receiver == slippage.solver_address, "receiver != solver"
         adjustment = slippage.amount_wei / 10 ** 18
         print(
             f"Adjusting {self.receiver} transfer by {adjustment:.5f} (slippage)"
@@ -91,9 +91,7 @@ def get_transfers(
             QueryParameter.date_type("EndTime", period_end),
         ])
 
-    negative_slippage = get_period_slippage(
-        dune, period_start, period_end, allow_positive=False
-    )
+    negative_slippage = get_period_slippage(dune, period_start, period_end).negative
     indexed_slippage = index_by(negative_slippage, 'solver_address')
 
     results = []
