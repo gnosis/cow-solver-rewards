@@ -87,6 +87,15 @@ class SplitSlippages:
         else:
             self.positive.append(slippage)
 
+    def __len__(self):
+        return len(self.negative) + len(self.positive)
+
+    def sum_negative(self) -> int:
+        return sum(neg.amount_wei for neg in self.negative)
+
+    def sum_positive(self) -> int:
+        return sum(pos.amount_wei for pos in self.positive)
+
 
 def get_period_slippage(
         dune: DuneAnalytics,

@@ -19,9 +19,10 @@ class TestDuneAnalytics(unittest.TestCase):
             period_start=datetime.strptime('2022-03-01', "%Y-%m-%d"),
             period_end=datetime.strptime('2022-03-02', "%Y-%m-%d"),
         )
-        assert (len(solver_slippages) > 0)
-        for slippage in solver_slippages:
-            assert (abs(slippage.amount_wei) < 2 * 10 ** 18)
+        self.assertLess(
+            solver_slippages.sum_positive() - solver_slippages.sum_negative(),
+            2 * 10 ** 18
+        )
 
 
 if __name__ == '__main__':
