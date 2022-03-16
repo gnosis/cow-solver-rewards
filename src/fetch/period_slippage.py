@@ -61,7 +61,7 @@ class SolverSlippage:
     amount_wei: int
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SolverSlippage:
+    def from_dict(cls, obj: dict[str, str]) -> SolverSlippage:
         """Converts Dune data dict to object with types"""
         return cls(
             solver_address=Address(obj["solver_address"]),
@@ -77,18 +77,18 @@ class SplitSlippages:
     negative: list[SolverSlippage]
     positive: list[SolverSlippage]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.negative = []
         self.positive = []
 
-    def append(self, slippage: SolverSlippage):
+    def append(self, slippage: SolverSlippage) -> None:
         """Appends the Slippage to the appropriate half based on signature of amount"""
         if slippage.amount_wei < 0:
             self.negative.append(slippage)
         else:
             self.positive.append(slippage)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.negative) + len(self.positive)
 
     def sum_negative(self) -> int:

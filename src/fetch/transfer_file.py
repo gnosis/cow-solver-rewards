@@ -38,7 +38,7 @@ class TokenType(Enum):
         except KeyError as err:
             raise ValueError(f"No TransferType {type_str}!") from err
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -54,7 +54,7 @@ class Transfer:
     amount: float
 
     @classmethod
-    def from_dict(cls, obj: dict) -> Transfer:
+    def from_dict(cls, obj: dict[str, str]) -> Transfer:
         """Converts Dune data dict to object with types"""
         token_type = TokenType.from_str(obj["token_type"])
         token_address = obj["token_address"]
@@ -72,7 +72,7 @@ class Transfer:
             amount=float(obj["amount"]),
         )
 
-    def add_slippage(self, slippage: Optional[SolverSlippage]):
+    def add_slippage(self, slippage: Optional[SolverSlippage]) -> None:
         if slippage is None:
             return
         assert self.receiver == slippage.solver_address, "receiver != solver"
@@ -108,8 +108,7 @@ def get_transfers(
         transfer = Transfer.from_dict(row)
         if transfer.token_type == TokenType.NATIVE:
             slippage: SolverSlippage = indexed_slippage.get(
-                transfer.receiver,
-                SolverSlippage(transfer.receiver, "Unknown", 0)
+                transfer.receiver, SolverSlippage(transfer.receiver, "Unknown", 0)
             )
             try:
                 transfer.add_slippage(slippage)

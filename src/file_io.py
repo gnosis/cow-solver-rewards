@@ -18,11 +18,11 @@ class File:
         """Returns the complete path to file"""
         return os.path.join(self.path, self.name)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.filename()
 
 
-def write_to_csv(data_list: list[Any], outfile: File):
+def write_to_csv(data_list: list[Any], outfile: File) -> None:
     """Writes `data_list` to `filename` as csv"""
     print(f"dumping {len(data_list)} results to {outfile.name}")
 
