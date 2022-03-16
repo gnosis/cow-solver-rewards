@@ -144,6 +144,11 @@ potential_buffer_trades as (
            solver_name,
            symbol,
            token,
+           sum( case 
+                    when (transfer_type = 'OUT_AMM' or transfer_type = 'IN_AMM') 
+                    then 1 
+                    else 0
+                end) as count_amm_interations,
            sum(amount) as amount
     from incoming_and_outgoing io
     group by tx_hash,
@@ -166,6 +171,17 @@ valued_potential_buffered_trades as (
                              on pusd.contract_address = t.token
                                  and date_trunc('minute', block_time) = pusd.minute
 ),
+internal_buffer_trader_solvers as (
+    Select 
+    CONCAT('0x', ENCODE(address, 'hex')) 
+    from gnosis_protocol_v2."view_solvers" 
+    where 
+        name = 'DexCowAgg' or
+        name = 'CowDexAg' or 
+        name = 'MIP' or
+        name = 'Quasimodo' or
+        name = 'QuasiModo'
+),
 buffer_trades as (
     Select date(a.block_time) as block_time,
            a.tx_hash,
@@ -185,8 +201,15 @@ buffer_trades as (
     where (
             case 
                 -- in order to classify as buffer trade, the postive surplus must be in an allow_listed token
-                when (a.amount > 0 and b.amount < 0 and a.token in (Select * from allow_listed_tokens)) 
-                    or (b.amount > 0 and a.amount < 0 and b.token in (Select * from allow_listed_tokens))
+                when ((a.amount > 0 and b.amount < 0 and a.token in (Select * from allow_listed_tokens)) 
+                    or (b.amount > 0 and a.amount < 0 and b.token in (Select * from allow_listed_tokens)))
+                    and
+                        -- We know that settlements have internal buffer trades if 
+                        -- either no amm interations are made 
+                        -- or the solution must come from a internal_buffer_trader_solvers solver
+                        -- Hence, in order to classify as buffer trade, also the following constraint must hold:
+                        (a.solver_address in (select * from internal_buffer_trader_solvers) 
+                        or a.count_amm_interations = 0)
                 then
                     case
                         when a.clearing_value is not null and
