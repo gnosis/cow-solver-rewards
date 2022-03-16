@@ -134,13 +134,14 @@ pre_clearing_prices as (
 ),
 clearing_prices as (
     select tx_hash,
-           price   as clearing_price,
            case
                when token = '\xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
                    then '\xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
                else token
-               end as token
+               end as token,
+           avg(price) as clearing_price
     from pre_clearing_prices
+    group by 1,2
 ),
 potential_buffer_trades as (
     select block_time,
