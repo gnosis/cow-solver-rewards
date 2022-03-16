@@ -14,7 +14,7 @@ from src.utils.dataset import index_by
 
 
 def safe_url() -> str:
-    safe_address = "0xA03be496e67Ec29bC62F01a428683D7F9c204930"
+    safe_address = Address("0xA03be496e67Ec29bC62F01a428683D7F9c204930")
     app_hash = "Qme49gESuwpSvwANmEqo34yfCkzyQehooJ5yL7aHmKJnpZ"
     return f"https://gnosis-safe.io/app/eth:{safe_address}/apps?appUrl=https://cloudflare-ipfs.com/ipfs/{app_hash}/"
 
