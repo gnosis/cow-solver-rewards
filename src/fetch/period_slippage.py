@@ -11,13 +11,13 @@ from src.models import Address, Network
 from src.token_list import ALLOWED_TOKEN_LIST_URL, get_trusted_tokens_from_url
 
 
-def generate_sql_query_for_allowed_token_list(token_list) -> str:
+def generate_sql_query_for_allowed_token_list(token_list: list[str]) -> str:
     values = ",".join(f"('\\{address[1:]}' :: bytea)" for address in token_list)
     query = f"allow_listed_tokens as (select * from (VALUES {values}) AS t (token)),"
     return query
 
 
-def prepend_to_sub_query(query, table_to_add):
+def prepend_to_sub_query(query: str, table_to_add: str) -> str:
     if query[0:4].lower() != "with":
         raise ValueError(f"Type {query} does not start with 'with'!")
     return "\n".join(
