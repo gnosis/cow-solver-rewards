@@ -169,7 +169,7 @@ valued_potential_buffered_trades as (
            amount / 10 ^ decimals * price as usd_value
     from potential_buffer_trades t
             -- The following joins require the uniqueness of the prices per join,
-            -- otherwise douplicated internal trades will be found.
+            -- otherwise duplicated internal trades will be found.
             -- For clearing prices, it is given by construction and 
             -- for prices.usd, one can see that the primary key of the table is 
             -- (contract, minute) as seen here: https://dune.xyz/queries/510124
