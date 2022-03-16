@@ -1,5 +1,5 @@
 import unittest
-from src.fetch.period_slippage import adds_table_after_with_statement, generate_sql_query_for_allowed_token_list
+from src.fetch.period_slippage import prepend_to_sub_query, generate_sql_query_for_allowed_token_list
 
 
 class TestQueryBuilding(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestQueryBuilding(unittest.TestCase):
     def test_adds_table_after_with_statement(self):
         test_query = "WITH  Select * from table"
         table_to_add = "table as (Select * from other_table)"
-        result_query = adds_table_after_with_statement(
+        result_query = prepend_to_sub_query(
             test_query, table_to_add)
         expected_query = "WITH\ntable as (Select * from other_table)\n Select * from table"
         self.assertEqual(result_query, expected_query)
