@@ -15,9 +15,11 @@ jobs:
       - name: Install Requirements
         run:
           pip install -r requirements.txt
-      - name: Pylint & Black
+      - name: Pylint
         run:
           pylint src/
+      - name: Black
+        run:
           black --check ./
       - name: Unit Tests
         run:
