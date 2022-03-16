@@ -9,11 +9,9 @@ from src.token_list import ALLOWED_TOKEN_LIST_URL, get_trusted_tokens_from_url
 
 
 def generate_sql_query_for_allowed_token_list(token_list) -> str:
-    query = "allow_listed_tokens as ( Select * from (VALUES"
-    for address in token_list:
-        query += f"('\\{address[1:]}' :: bytea),"
-    query = query[:-1]
-    query += ") AS t (token)),"
+    values = ",".join(
+        f"('\\{address[1:]}' :: bytea)" for address in token_list)
+    query = f"allow_listed_tokens as (select * from (VALUES {values}) AS t (token)),"
     return query
 
 
