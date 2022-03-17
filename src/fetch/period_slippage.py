@@ -1,6 +1,6 @@
+"""A standalone script for fetching Solver Slippage for Accounting Period"""
 from __future__ import annotations
 
-import argparse
 from dataclasses import dataclass
 from datetime import datetime
 from pprint import pprint
@@ -9,36 +9,32 @@ from src.dune_analytics import DuneAnalytics, QueryParameter
 from src.file_io import File
 from src.models import Address, Network
 from src.token_list import ALLOWED_TOKEN_LIST_URL, get_trusted_tokens_from_url
+from src.utils.script_args import generic_script_init
 
 
-def generate_sql_query_for_allowed_token_list(token_list: list[str]) -> str:
+def allowed_token_list_query(token_list: list[str]) -> str:
+    """Constructs sub query for allowed tokens"""
     values = ",".join(f"('\\{address[1:]}' :: bytea)" for address in token_list)
     query = f"allow_listed_tokens as (select * from (VALUES {values}) AS t (token)),"
     return query
 
 
 def prepend_to_sub_query(query: str, table_to_add: str) -> str:
+    """prepends query with table immediately after with statement"""
     if query[0:4].lower() != "with":
         raise ValueError(f"Type {query} does not start with 'with'!")
-    return "\n".join(
-        [
-            query[0:4],
-            table_to_add,
-            query[5:],
-        ]
-    )
+    return "\n".join([query[0:4], table_to_add, query[5:]])
 
 
 def add_token_list_table_to_query(original_sub_query: str) -> str:
     """Inserts the token_list table right after the WITH statement into the sql query"""
     token_list = get_trusted_tokens_from_url(ALLOWED_TOKEN_LIST_URL)
-    sql_query_for_allowed_token_list = generate_sql_query_for_allowed_token_list(
-        token_list
-    )
+    sql_query_for_allowed_token_list = allowed_token_list_query(token_list)
     return prepend_to_sub_query(original_sub_query, sql_query_for_allowed_token_list)
 
 
 def slippage_query(dune: DuneAnalytics) -> str:
+    """Constructs our slippage query by joining sub-queries"""
     path = "./queries/slippage"
     slippage_sub_query = dune.open_query(
         File("subquery_batchwise_internal_transfers.sql", path).filename()
@@ -92,9 +88,11 @@ class SplitSlippages:
         return len(self.negative) + len(self.positive)
 
     def sum_negative(self) -> int:
+        """Returns total negative slippage"""
         return sum(neg.amount_wei for neg in self.negative)
 
     def sum_positive(self) -> int:
+        """Returns total positive slippage"""
         return sum(pos.amount_wei for pos in self.positive)
 
 
@@ -103,6 +101,10 @@ def get_period_slippage(
     period_start: datetime,
     period_end: datetime,
 ) -> SplitSlippages:
+    """
+    Executes & Fetches results of slippage query per solver for specified accounting period.
+    Returns a class representation of the results as two lists (positive & negative).
+    """
     data_set = dune.fetch(
         query_str=slippage_query(dune),
         network=Network.MAINNET,
@@ -122,19 +124,12 @@ def get_period_slippage(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Fetch Accounting Period Totals")
-    parser.add_argument(
-        "--start", type=str, help="Accounting Period Start", required=True
+    dune_connection, args = generic_script_init(
+        description="Fetch Accounting Period Totals"
     )
-    parser.add_argument("--end", type=str, help="Accounting Period End", required=True)
-    args = parser.parse_args()
-
-    dune_connection = DuneAnalytics.new_from_environment()
-
     slippage_for_period = get_period_slippage(
         dune=dune_connection,
         period_start=datetime.strptime(args.start, "%Y-%m-%d"),
         period_end=datetime.strptime(args.end, "%Y-%m-%d"),
     )
-
     pprint(slippage_for_period)
