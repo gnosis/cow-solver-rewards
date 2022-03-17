@@ -54,17 +54,10 @@ def get_internal_transfers(
     period_start: datetime,
     period_end: datetime,
 ) -> list[InternalTokenTransfer]:
-    slippage_sub_query = dune.open_query("./queries/period_slippage.sql")
-    select_transfers_query = """
-        select block_time,
-           CONCAT('0x', ENCODE(tx_hash, 'hex')) as tx_hash,
-           solver_address,
-           solver_name,
-           CONCAT('0x', ENCODE(token, 'hex')) as token,
-           amount,
-           transfer_type
-        from incoming_and_outgoing_with_buffer_trades
-    """
+    slippage_sub_query = DuneAnalytics.open_query("./queries/period_slippage.sql")
+    select_transfers_query = DuneAnalytics.open_query(
+        "./tests/queries/select_internal_transfers.sql"
+    )
 
     query = "\n".join(
         [add_token_list_table_to_query(slippage_sub_query), select_transfers_query]
