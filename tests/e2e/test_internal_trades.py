@@ -13,7 +13,6 @@ from src.models import Address, Network, TransferType
 class InternalTokenTransfer:
     """Total amount reimbursed for accounting period"""
 
-    tx_hash: str
     transfer_type: TransferType
     token: Address
     amount: int
@@ -22,7 +21,6 @@ class InternalTokenTransfer:
     def from_dict(cls, obj: dict[str, str]) -> InternalTokenTransfer:
         """Converts Dune data dict to object with types"""
         return cls(
-            tx_hash=obj["tx_hash"],
             transfer_type=TransferType.from_str(obj["transfer_type"]),
             token=Address(obj["token"]),
             amount=int(obj["amount"]),

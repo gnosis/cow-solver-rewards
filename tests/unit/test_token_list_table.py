@@ -19,11 +19,11 @@ class TestQueryBuilding(unittest.TestCase):
         self.assertEqual(query, expected_query)
 
     def test_adds_table_after_with_statement(self):
-        test_query = "with select * from table"
-        table_to_add = "table as (select * from other_table)"
+        test_query = "WITH Select * from table"
+        table_to_add = "table as (Select * from other_table)"
         result_query = prepend_to_sub_query(test_query, table_to_add)
         self.assertEqual(
-            "with\ntable as (select * from other_table)\nselect * from table",
+            "WITH\ntable as (Select * from other_table)\nselect * from table",
             result_query,
         )
 
