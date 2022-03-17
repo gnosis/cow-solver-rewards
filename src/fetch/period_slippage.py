@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 from pprint import pprint
 
 from src.dune_analytics import DuneAnalytics, QueryParameter

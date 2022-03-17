@@ -112,6 +112,8 @@ class InternalTokenTransfer:
 
 
 class AccountingPeriod:
+    """Class handling the date arithmetic and string conversions for date intervals"""
+
     def __init__(self, start: str, length_days: int = 7):
         self.start = datetime.strptime(start, "%Y-%m-%d").date()
         self.end = self.start + timedelta(days=length_days)
