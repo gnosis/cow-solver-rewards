@@ -41,6 +41,7 @@ def get_internal_transfers(
 
 
 class TestDuneAnalytics(unittest.TestCase):
+
     def setUp(self):
         self.dune_connection = DuneAnalytics.new_from_environment()
         self.period_start = datetime.strptime("2022-03-01", "%Y-%m-%d")
@@ -243,6 +244,21 @@ class TestDuneAnalytics(unittest.TestCase):
                 "0x990f341946A3fdB507aE7e52d17851B87168017c", internal_transfers
             ),
             0,
+        )
+
+    def test_excludes_batches_involving_axs_old(self):
+        """
+        tx: 0x5d74fde18840e02a0ca49cd3caff37b4c9b4b20c254692a629d75d93b5d69f89
+        We do not expect to get any internal accounting data returned for this batch
+        """
+        self.assertEqual(
+            get_internal_transfers(
+                dune=self.dune_connection,
+                tx_hash="0x5d74fde18840e02a0ca49cd3caff37b4c9b4b20c254692a629d75d93b5d69f89",
+                period_start=self.period_start,
+                period_end=self.period_end,
+            ),
+            []
         )
 
 
