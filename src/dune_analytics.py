@@ -241,7 +241,7 @@ class DuneAnalytics:
         }
         self.handle_dune_request(query_data)
 
-    def query_result_id(self):  # type: ignore
+    def query_result_id(self) -> int:
         """
         Fetch the query result id for a query
         :return: result_id
