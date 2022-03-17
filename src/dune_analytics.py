@@ -256,9 +256,9 @@ class DuneAnalytics:
 
         data = self.handle_dune_request(query_data)
         result_id = data.get("data").get("get_result").get("result_id")
-        return result_id
+        return int(result_id)
 
-    def query_result(self, result_id: str):  # type: ignore
+    def query_result(self, result_id: int):  # type: ignore
         """
         Fetch the result for a query
         :param result_id: result id of the query
