@@ -99,7 +99,7 @@ Also, it might happen that the slippage of a solver is bigger than the ETH payou
 Note that we must wait some time after the period has ended for some data to finalize (e.g. `dex.trades`
 , `ethereum.transactions` our event data, etc...). Hence, the scripts should not be executed around midnight on Tuesdays.
 
-Once the transfer_file is created and you checked the results for reasonability, please create the multi-send transaction with the link provided in the console.
+After generating the transfer file and double-checking the results, please create the multi-send transaction with the link provided in the console.
 
 Inform the team of this proposed transaction in the #dev-multisig Slack channel and follow through to ensure execution. It is preferred that the transaction be executed by the proposer account(eth:0xd8Ca5FE380b68171155C7069B8df166db28befdd).
 
