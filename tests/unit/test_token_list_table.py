@@ -23,7 +23,7 @@ class TestQueryBuilding(unittest.TestCase):
         table_to_add = "table as (Select * from other_table)"
         result_query = prepend_to_sub_query(test_query, table_to_add)
         self.assertEqual(
-            "WITH\ntable as (Select * from other_table)\nselect * from table",
+            "WITH\ntable as (Select * from other_table)\nSelect * from table",
             result_query,
         )
 
