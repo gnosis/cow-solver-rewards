@@ -92,7 +92,7 @@ I.e. for the first payout, we would run:
 and for the next one:
 `python -m src.fetch.transfer_file --start '2022-03-08' --end '2022-03-15'`
 
-Please double check that the payout is reasonable. That means the eth sent should be between 30-80 ETH, depending on gas prices from last week. Also the amount of cow send should reflect 100x the amount of batches. Reasonable numbers are around 300000-500000, that means 500-700 batches a day.
+Please double check that the payout is reasonable. That means the eth sent should be between 30-80 ETH, depending on gas prices from last week. Also the amount of cow send should reflect 100x the amount of batches. Reasonable COW totals are around 300000-500000, that means 500-700 batches a day.
 
 Also, it might happen that the slippage of a solver is bigger than the ETH payout. In this case, please do not proceed with the payout, until the root cause is known. Feel free to reach out the project maintainers to do the investigation.
 
