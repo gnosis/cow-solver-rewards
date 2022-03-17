@@ -41,7 +41,6 @@ def get_internal_transfers(
 
 
 class TestDuneAnalytics(unittest.TestCase):
-
     def setUp(self):
         self.dune_connection = DuneAnalytics.new_from_environment()
         self.period_start = datetime.strptime("2022-03-01", "%Y-%m-%d")
@@ -258,7 +257,7 @@ class TestDuneAnalytics(unittest.TestCase):
                 period_start=self.period_start,
                 period_end=self.period_end,
             ),
-            []
+            [],
         )
 
 
