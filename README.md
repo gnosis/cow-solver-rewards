@@ -97,7 +97,7 @@ Please double check that the payout is reasonable. That means the eth sent shoul
 Also, it might happen that the slippage of a solver is bigger than the ETH payout. In this case, please do not proceed with the payout, until the root cause is known. Feel free to reach out the project maintainers to do the investigation.
 
 Note that we must wait some time after the period has ended for some data to finalize (e.g. `dex.trades`
-, `ethereum.transactions` our event data, etc...). Hence, the scripts should not be executed around midnight on Tuesdays.
+, `ethereum.transactions` our event data, etc...). Hence, the scripts should not be executed immediately after the accounting period has ended.
 
 After generating the transfer file and double-checking the results, please create the multi-send transaction with the link provided in the console.
 
