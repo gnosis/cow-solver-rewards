@@ -45,7 +45,7 @@ class QueryType(Enum):
     PER_TX = "results_per_tx"
     TOTAL = "results"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
