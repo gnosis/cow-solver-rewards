@@ -15,13 +15,13 @@ jobs:
       - name: Install Requirements
         run:
           pip install -r requirements.txt
-      - name: Pylint
+      - name: PyLint
         run:
           pylint src/
-      - name: Black
+      - name: Black Formatting
         run:
           black --check ./
-      - name: Type Check (mypy)
+      - name: MyPy (type check)
         run: mypy src --strict
       - name: Unit Tests
         run:
