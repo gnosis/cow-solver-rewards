@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import unittest
 from dataclasses import dataclass
-from datetime import datetime
 from enum import Enum
 
 from src.dune_analytics import DuneAnalytics, QueryParameter
