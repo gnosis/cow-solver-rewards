@@ -84,13 +84,13 @@ In order to do the payout, run the following scripts:
 ```
 source .env
 rm -r out/
-python -m src.fetch.transfer_file --start '2022-MM-DD' --end '2022-MM-DD'
+python -m src.fetch.transfer_file --start '2022-MM-DD'
 ```
-Here, the start should be the date of the Tuesday from last week and the end day should be the Tuesday from this week.
+Here, the start should specify the Tuesday of the start of the accounting period. The next Tuesday - the end date of the accounting period - will be calculated automatically by the script.
 I.e. for the first payout, we would run:
-`python -m src.fetch.transfer_file --start '2022-03-01' --end '2022-03-08' `
+`python -m src.fetch.transfer_file --start '2022-03-01'`
 and for the next one:
-`python -m src.fetch.transfer_file --start '2022-03-08' --end '2022-03-15'`
+`python -m src.fetch.transfer_file --start '2022-03-08'`
 
 Please double check that the payout is reasonable. That means the eth sent should be between 30-80 ETH, depending on gas prices from last week. Also the amount of cow send should reflect 100x the amount of batches. Reasonable COW totals are around 300000-500000, that means 500-700 batches a day.
 
