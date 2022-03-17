@@ -4,6 +4,7 @@ Common location for shared resources throughout the project.
 from __future__ import annotations
 
 import re
+from datetime import datetime, timedelta
 from enum import Enum
 
 from web3 import Web3
@@ -75,3 +76,16 @@ class TransferType(Enum):
             return cls[type_str.upper()]
         except KeyError as err:
             raise ValueError(f"No TransferType {type_str}!") from err
+
+
+class AccountingPeriod:
+    """Class handling the date arithmetic and string conversions for date intervals"""
+
+    def __init__(self, start: str, length_days: int = 7):
+        self.start = datetime.strptime(start, "%Y-%m-%d").date()
+        self.end = self.start + timedelta(days=length_days)
+
+    def __str__(self) -> str:
+        return "-to-".join(
+            [self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d")]
+        )
