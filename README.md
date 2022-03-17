@@ -101,7 +101,7 @@ Note that we must wait some time after the period has ended for some data to fin
 
 Once the transfer_file is created and you checked the results for reasonability, please create the multi-send transaction with the link provided in the console.
 
-Let the team mates know about it the dev-multisig channel and make sure it will be executed. Preferably, you use the eth from the proposer account(eth:0xd8Ca5FE380b68171155C7069B8df166db28befdd) to execute the tx.
+Inform the team of this proposed transaction in the #dev-multisig Slack channel and follow through to ensure execution. It is preferred that the transaction be executed by the proposer account(eth:0xd8Ca5FE380b68171155C7069B8df166db28befdd).
 
 
 
