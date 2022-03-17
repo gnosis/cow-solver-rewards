@@ -318,7 +318,7 @@ results_per_tx as (
     select solver_address,
            solver_name,
            sum(token_imbalance_wei * price / 10 ^ p.decimals) as usd_value,
-           tx_hash
+           CONCAT('0x', ENCODE(tx_hash, 'hex')) as tx_hash
     from final_token_balance_sheet
              inner join end_prices p on token = p.contract_address
     group by solver_address,

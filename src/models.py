@@ -4,7 +4,6 @@ Common location for shared resources throughout the project.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from enum import Enum
 
 from web3 import Web3
@@ -76,35 +75,3 @@ class TransferType(Enum):
             return cls[type_str.upper()]
         except KeyError as err:
             raise ValueError(f"No TransferType {type_str}!") from err
-
-
-@dataclass
-class InternalTokenTransfer:
-    """Total amount reimbursed for accounting period"""
-
-    transfer_type: TransferType
-    token: Address
-    amount: int
-
-    @classmethod
-    def from_dict(cls, obj: dict[str, str]) -> InternalTokenTransfer:
-        """Converts Dune data dict to object with types"""
-        return cls(
-            transfer_type=TransferType.from_str(obj["transfer_type"]),
-            token=Address(obj["token"]),
-            amount=int(obj["amount"]),
-        )
-
-    @staticmethod
-    def filter_by(
-        recs: list[InternalTokenTransfer], transfer_type: TransferType
-    ) -> list[InternalTokenTransfer]:
-        """Filters list of records returning only those with indicated TransferType"""
-        return list(filter(lambda r: r.transfer_type == transfer_type, recs))
-
-    @classmethod
-    def internal_trades(
-        cls, recs: list[InternalTokenTransfer]
-    ) -> list[InternalTokenTransfer]:
-        """Filters records returning only Internal Trade types."""
-        return cls.filter_by(recs, TransferType.INTERNAL_TRADE)

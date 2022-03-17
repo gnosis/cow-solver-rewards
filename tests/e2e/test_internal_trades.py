@@ -1,10 +1,46 @@
+from __future__ import annotations
+
 import unittest
+from dataclasses import dataclass
 from datetime import datetime
 
 from src.dune_analytics import DuneAnalytics, QueryParameter
 from src.fetch.period_slippage import add_token_list_table_to_query
-from src.file_io import File
-from src.models import Address, InternalTokenTransfer, Network
+from src.models import Address, Network, TransferType
+
+
+@dataclass
+class InternalTokenTransfer:
+    """Total amount reimbursed for accounting period"""
+
+    tx_hash: str
+    transfer_type: TransferType
+    token: Address
+    amount: int
+
+    @classmethod
+    def from_dict(cls, obj: dict[str, str]) -> InternalTokenTransfer:
+        """Converts Dune data dict to object with types"""
+        return cls(
+            tx_hash=obj["tx_hash"],
+            transfer_type=TransferType.from_str(obj["transfer_type"]),
+            token=Address(obj["token"]),
+            amount=int(obj["amount"]),
+        )
+
+    @staticmethod
+    def filter_by_type(
+        recs: list[InternalTokenTransfer], transfer_type: TransferType
+    ) -> list[InternalTokenTransfer]:
+        """Filters list of records returning only those with indicated TransferType"""
+        return list(filter(lambda r: r.transfer_type == transfer_type, recs))
+
+    @classmethod
+    def internal_trades(
+        cls, recs: list[InternalTokenTransfer]
+    ) -> list[InternalTokenTransfer]:
+        """Filters records returning only Internal Trade types."""
+        return cls.filter_by_type(recs, TransferType.INTERNAL_TRADE)
 
 
 def token_slippage(
@@ -15,15 +51,23 @@ def token_slippage(
 
 
 def get_internal_transfers(
-    dune: DuneAnalytics, tx_hash: str, period_start: datetime, period_end: datetime
+    dune: DuneAnalytics,
+    tx_hash: str,
+    period_start: datetime,
+    period_end: datetime,
 ) -> list[InternalTokenTransfer]:
-    path = "./queries/slippage"
-    select_transfers_query = dune.open_query(
-        File("select_in_out_with_buffers.sql", path).filename()
-    )
-    slippage_sub_query = dune.open_query(
-        File("subquery_batchwise_internal_transfers.sql", path).filename()
-    )
+    slippage_sub_query = dune.open_query("./queries/period_slippage.sql")
+    select_transfers_query = """
+        select block_time,
+           CONCAT('0x', ENCODE(tx_hash, 'hex')) as tx_hash,
+           solver_address,
+           solver_name,
+           CONCAT('0x', ENCODE(token, 'hex')) as token,
+           amount,
+           transfer_type
+        from incoming_and_outgoing_with_buffer_trades
+    """
+
     query = "\n".join(
         [add_token_list_table_to_query(slippage_sub_query), select_transfers_query]
     )
