@@ -62,12 +62,12 @@ class TestTransfer(unittest.TestCase):
             token_type=TokenType.NATIVE, token_address=None, receiver=solver, amount=1.0
         )
         positive_slippage = SolverSlippage(
-            solver_name="Test Solver", solver_address=solver, amount_wei=10 ** 18 // 2
+            solver_name="Test Solver", solver_address=solver, amount_wei=10**18 // 2
         )
         negative_slippage = SolverSlippage(
             solver_name="Test Solver",
             solver_address=solver,
-            amount_wei=-(10 ** 18) // 2,
+            amount_wei=-(10**18) // 2,
         )
         transfer.add_slippage(positive_slippage)
         self.assertAlmostEqual(transfer.amount, 1.5, delta=0.0000000001)
@@ -75,7 +75,7 @@ class TestTransfer(unittest.TestCase):
         self.assertAlmostEqual(transfer.amount, 1.0, delta=0.0000000001)
 
         overdraft_slippage = SolverSlippage(
-            solver_name="Test Solver", solver_address=solver, amount_wei=-2 * (10 ** 18)
+            solver_name="Test Solver", solver_address=solver, amount_wei=-2 * (10**18)
         )
 
         with self.assertRaises(ValueError) as err:
