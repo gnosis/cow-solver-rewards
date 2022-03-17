@@ -58,26 +58,6 @@ class Address:
         return match_result is not None
 
 
-class TransferType(Enum):
-    """
-    Classifications of Internal Token Transfers
-    """
-
-    IN_AMM = "IN_AMM"
-    OUT_AMM = "OUT_AMM"
-    IN_USER = "IN_USER"
-    OUT_USER = "OUT_USER"
-    INTERNAL_TRADE = "INTERNAL_TRADE"
-
-    @classmethod
-    def from_str(cls, type_str: str) -> TransferType:
-        """Constructs Enum variant from string (case-insensitive)"""
-        try:
-            return cls[type_str.upper()]
-        except KeyError as err:
-            raise ValueError(f"No TransferType {type_str}!") from err
-
-
 class AccountingPeriod:
     """Class handling the date arithmetic and string conversions for date intervals"""
 

@@ -2,7 +2,8 @@ import unittest
 
 from src.fetch.period_slippage import SolverSlippage
 from src.fetch.transfer_file import TokenType, Transfer
-from src.models import AccountingPeriod, Address, TransferType
+from src.models import AccountingPeriod, Address
+from tests.e2e.test_internal_trades import TransferType
 
 ONE_ADDRESS = Address("0x1111111111111111111111111111111111111111")
 TWO_ADDRESS = Address("0x2222222222222222222222222222222222222222")
@@ -61,12 +62,12 @@ class TestTransfer(unittest.TestCase):
             token_type=TokenType.NATIVE, token_address=None, receiver=solver, amount=1.0
         )
         positive_slippage = SolverSlippage(
-            solver_name="Test Solver", solver_address=solver, amount_wei=10**18 // 2
+            solver_name="Test Solver", solver_address=solver, amount_wei=10 ** 18 // 2
         )
         negative_slippage = SolverSlippage(
             solver_name="Test Solver",
             solver_address=solver,
-            amount_wei=-(10**18) // 2,
+            amount_wei=-(10 ** 18) // 2,
         )
         transfer.add_slippage(positive_slippage)
         self.assertAlmostEqual(transfer.amount, 1.5, delta=0.0000000001)
@@ -74,7 +75,7 @@ class TestTransfer(unittest.TestCase):
         self.assertAlmostEqual(transfer.amount, 1.0, delta=0.0000000001)
 
         overdraft_slippage = SolverSlippage(
-            solver_name="Test Solver", solver_address=solver, amount_wei=-2 * (10**18)
+            solver_name="Test Solver", solver_address=solver, amount_wei=-2 * (10 ** 18)
         )
 
         with self.assertRaises(ValueError) as err:
