@@ -80,7 +80,7 @@ class Transfer:
         if slippage is None:
             return
         assert self.receiver == slippage.solver_address, "receiver != solver"
-        adjustment = slippage.amount_wei / 10 ** 18
+        adjustment = slippage.amount_wei / 10**18
         print(
             f"Adjusting {self.receiver}({slippage.solver_name}) "
             f"transfer by {adjustment:.5f} (slippage)"
