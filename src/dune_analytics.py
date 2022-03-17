@@ -241,7 +241,7 @@ class DuneAnalytics:
         }
         self.handle_dune_request(query_data)
 
-    def query_result_id(self) -> int:
+    def query_result_id(self) -> Optional[str]:
         """
         Fetch the query result id for a query
         :return: result_id
@@ -256,16 +256,16 @@ class DuneAnalytics:
 
         data = self.handle_dune_request(query_data)
         result_id = data.get("data").get("get_result").get("result_id")
-        return int(result_id)
+        return str(result_id) if result_id else None
 
-    def query_result(self, result_id: int):  # type: ignore
+    def query_result(self, result_id: str):  # type: ignore
         """
         Fetch the result for a query
         :param result_id: result id of the query
         """
         query_data = {
             "operationName": "FindResultDataByResult",
-            "variables": {"result_id": result_id},
+            "variables": {"result_id": str(result_id)},
             "query": "query FindResultDataByResult($result_id: uuid!) "
             "{\n  query_results(where: {id: {_eq: $result_id}}) "
             "{\n    id\n    job_id\n    error\n    runtime\n    "
