@@ -199,13 +199,10 @@ class TestDuneAnalytics(unittest.TestCase):
         tx: 0x80ae1c6a5224da60a1bf188f2101bd154e29ef71d54d136bfd1f6cc529f9d7ef
         CRVCX is not part of the priceUSD list from dune, still we are finding the internal trade
         """
-        internal_transfers = get_internal_transfers(
-            dune=self.dune_connection,
+        internal_transfers = self.get_internal_transfers(
             tx_hash="0x80ae1c6a5224da60a1bf188f2101bd154e29ef71d54d136bfd1f6cc529f9d7ef",
-            period_start=self.period_start,
-            period_end=self.period_end,
         )
-        internal_trades = InternalTokenTransfer.internal_trades(internal_transfers)
+        internal_trades = InternalTransfer.internal_trades(internal_transfers)
 
         self.assertEqual(len(internal_trades), 1 * 2)
         self.assertEqual(
@@ -227,13 +224,10 @@ class TestDuneAnalytics(unittest.TestCase):
         This tx has an illegal internal buffer trade, it was not allowed to sell UBI
         to the contract
         """
-        internal_transfers = get_internal_transfers(
-            dune=self.dune_connection,
+        internal_transfers = self.get_internal_transfers(
             tx_hash="0x1b4a299bfd2bb97e2289260495f566b750b9b62856b061f31d5186ae3b5ddce7",
-            period_start=self.period_start,
-            period_end=self.period_end,
         )
-        internal_trades = InternalTokenTransfer.internal_trades(internal_transfers)
+        internal_trades = InternalTransfer.internal_trades(internal_transfers)
 
         self.assertEqual(len(internal_trades), 0 * 2)
         self.assertEqual(
