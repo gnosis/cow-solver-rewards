@@ -1,5 +1,5 @@
 black==22.1.0
-duneapi==2.0.3
+duneapi==2.0.4
 mypy==0.941
 pylint==2.12.2
 pytest==7.1.1
