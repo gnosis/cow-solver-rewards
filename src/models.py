@@ -4,6 +4,7 @@ Common location for shared resources throughout the project.
 from __future__ import annotations
 
 import re
+import random
 from datetime import datetime, timedelta
 from enum import Enum
 
@@ -69,3 +70,43 @@ class AccountingPeriod:
         return "-to-".join(
             [self.start.strftime("%Y-%m-%d"), self.end.strftime("%Y-%m-%d")]
         )
+
+
+class AppData:
+    """
+    A CowSwap app data.
+    """
+
+    def __init__(self, value: str):
+        if AppData._is_valid(value):
+            self.value: str = value.lower()
+        else:
+            raise ValueError(f"invalid app data {value}")
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, AppData) and self.value == other.value
+
+    def __hash__(self) -> int:
+        return self.value.__hash__()
+
+    @classmethod
+    def zero(cls) -> AppData:
+        """
+        Returns the zero app data.
+        """
+
+        return cls("0x0000000000000000000000000000000000000000000000000000000000000000")
+
+    @classmethod
+    def random(cls) -> AppData:
+        return cls(f"0x{random.randrange(2**256):064x}")
+
+    @staticmethod
+    def _is_valid(value: str) -> bool:
+        match_result = re.match(
+            pattern=r"^(0x)?[0-9a-f]{64}$", string=value, flags=re.IGNORECASE
+        )
+        return match_result is not None

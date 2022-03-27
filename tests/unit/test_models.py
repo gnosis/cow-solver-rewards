@@ -2,7 +2,7 @@ import unittest
 
 from src.fetch.period_slippage import SolverSlippage
 from src.fetch.transfer_file import TokenType, Transfer
-from src.models import AccountingPeriod, Address
+from src.models import AccountingPeriod, Address, AppData
 from tests.e2e.test_internal_trades import TransferType
 
 ONE_ADDRESS = Address("0x1111111111111111111111111111111111111111")
@@ -162,6 +162,21 @@ class TestAccountingPeriod(unittest.TestCase):
             f"time data '{bad_date_string}' does not match format '%Y-%m-%d'",
             str(err.exception),
         )
+
+
+class TestAppData(unittest.TestCase):
+    def test_invalid(self):
+        with self.assertRaises(ValueError):
+            AppData("this is not valid")
+
+    def test_valid(self):
+        self.assertEqual(
+            AppData("0x0123456789abcdef0123456789aBcDeF0123456789ABcDef0123456789ABCDEF").value,
+            "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        )
+
+    def test_random(self):
+        self.assertEqual(len(AppData.random().value), 66)
 
 
 if __name__ == "__main__":
