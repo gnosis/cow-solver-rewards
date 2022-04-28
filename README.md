@@ -1,6 +1,6 @@
 ------------------
 
-!!! **THIS PROJECT HAS BEEN ARCHIVED, ALL FUTURE DEVELOPMENT WILL CONTINUE FROM** [THIS FORK](https://github.com/cowprotocol/solver-rewards) !!!
+The team that worked on this project has spun out of Gnosis Organisation and continues development on a forked repo (April 5, 2022) which is available here https://github.com/cowprotocol/solver-rewards
 
 -----------------
 
